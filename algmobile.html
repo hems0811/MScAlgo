@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>VOT Clinical Eligibility Screener</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f7f6; }
+        .container { max-width: 600px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: auto; }
+        h2 { color: #333; text-align: center; margin-top: 0; font-size: 1.3em; }
+        h3 { color: #0056b3; margin-top: 25px; font-size: 1em; text-transform: uppercase; border-bottom: 2px solid #eef4f9; padding-bottom: 5px; }
+        .group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9em; }
+        select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 1em; background: #fff; -webkit-appearance: none; }
+        .mitigation { display: none; margin-top: 8px; font-size: 0.85em; color: #856404; background: #fff3cd; padding: 10px; border-radius: 6px; border-left: 4px solid #ffc107; }
+        button { width: 100%; padding: 16px; font-size: 1.1em; background-color: #0056b3; color: white; border: none; border-radius: 8px; margin-top: 25px; font-weight: bold; cursor: pointer; }
+        #banner { padding: 20px; text-align: center; font-weight: bold; border-radius: 8px; margin-top: 20px; display: none; }
+        .red { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .green { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>VOT Clinical Eligibility</h2>
+
+    <h3>Phase 1: Safety & Stability</h3>
+    <div class="group"><label>Age ≥18 (or guardian present)?</label><select id="q1"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+    <div class="group"><label>Completed ≥2 weeks intensive phase?</label><select id="q2"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+    <div class="group"><label>>30 days treatment remaining?</label><select id="q3"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+    <div class="group"><label>All-oral regimen?</label><select id="q4"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+    <div class="group"><label>Physiologically stable?</label><select id="q5"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+
+    <h3>Phase 2: Tech & Logistics</h3>
+    <div class="group"><label>Tech Literacy (can record video)?</label><select id="q6" onchange="toggleMit(6)"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select>
+        <div id="mit6" class="mitigation"><label><input type="checkbox" id="m6"> Mitigation: Family member assigned?</label></div></div>
+    <div class="group"><label>Owns/access to camera device?</label><select id="q7" onchange="toggleMit(7)"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select>
+        <div id="mit7" class="mitigation"><label><input type="checkbox" id="m7"> Mitigation: Clinic loaner available?</label></div></div>
+    <div class="group"><label>Reliable Internet/Data?</label><select id="q8" onchange="toggleMit(8)"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select>
+        <div id="mit8" class="mitigation"><label><input type="checkbox" id="m8"> Mitigation: Clinic data support?</label></div></div>
+    <div class="group"><label>Private space for recording?</label><select id="q9"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+    <div class="group"><label>Linguistic proficiency?</label><select id="q10"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+
+    <h3>Phase 3: Patient Profile</h3>
+    <div class="group"><label>Good previous adherence?</label><select id="q11"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+    <div class="group"><label>Psych/Behavioral stable?</label><select id="q12"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+    <div class="group"><label>Voluntarily motivated?</label><select id="q13"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+    <div class="group"><label>Independent (no heavy nursing)?</label><select id="q14"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+
+    <button type="button" onclick="evaluateTriage()">Evaluate Eligibility</button>
+    <div id="banner"></div>
+</div>
+
+<script>
+    function toggleMit(n) {
+        var el = document.getElementById('q' + n);
+        var mit = document.getElementById('mit' + n);
+        mit.style.display = (el.value === 'no') ? 'block' : 'none';
+    }
+
+    function evaluateTriage() {
+        var q = [];
+        var allFilled = true;
+        for (var i = 1; i <= 14; i++) {
+            var val = document.getElementById('q' + i).value;
+            if (val === "") { allFilled = false; break; }
+            q[i] = val;
+        }
+
+        if (!allFilled) {
+            alert("Please answer all questions before evaluating.");
+            return;
+        }
+
+        // Logic check
+        var passQ1to5 = (q[1]==='yes' && q[2]==='yes' && q[3]==='yes' && q[4]==='yes' && q[5]==='yes');
+        var passQ6 = (q[6]==='yes' || (q[6]==='no' && document.getElementById('m6').checked));
+        var passQ7 = (q[7]==='yes' || (q[7]==='no' && document.getElementById('m7').checked));
+        var passQ8 = (q[8]==='yes' || (q[8]==='no' && document.getElementById('m8').checked));
+        var passQ9to14 = (q[9]==='yes' && q[10]==='yes' && q[11]==='yes' && q[12]==='yes' && q[13]==='yes' && q[14]==='yes');
+
+        var b = document.getElementById('banner');
+        b.style.display = 'block';
+        if (passQ1to5 && passQ6 && passQ7 && passQ8 && passQ9to14) {
+            b.className = 'green';
+            b.innerHTML = 'HIGHLY ELIGIBLE: Proceed to onboarding.';
+        } else {
+            b.className = 'red';
+            b.innerHTML = 'INELIGIBLE: Revert to standard DOT.';
+        }
+    }
+</script>
+</body>
+</html>
